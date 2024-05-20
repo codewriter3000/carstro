@@ -1,0 +1,8 @@
+---
+import { getServerStatus } from '../../lib'
+import Layout from '../layouts/layout.astro'
+---
+<Layout>
+	<h1>Astro</h1>
+	<h2>Server Status: { getServerStatus() }</h2>
+</Layout>
