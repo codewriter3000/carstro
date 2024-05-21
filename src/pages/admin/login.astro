@@ -1,0 +1,9 @@
+---
+import LoginPage from '@/components/react/admin/pages/LoginPage'
+import ToplessLayout from '../../layouts/topless-layout.astro'
+
+import '@/styling/pages/admin/_login.scss'
+---
+<ToplessLayout>
+    <LoginPage client:load />
+</ToplessLayout>
