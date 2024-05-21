@@ -2,6 +2,15 @@
 @use '@carbon/react/scss/type' as *;
 @use '@carbon/react/scss/breakpoint' as *;
 @use '@carbon/react/scss/theme' as *;
+@use '@carbon/colors';
 
 @use '@/styling/mixins.scss' as *;
 @use '@/styling/overrides.scss';
+
+.login-page {
+  @include login-page-background;
+}
+
+.login-frame {
+  @apply flex flex-row min-h-screen justify-center items-center;
+}

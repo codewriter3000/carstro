@@ -1,7 +1,14 @@
 @use '@carbon/react/scss/spacing' as *;
 @use '@carbon/react/scss/theme' as *;
+@use '@carbon/colors';
 
 @mixin landing-page-background() {
   background-color: $layer-01;
   position: relative;
+}
+
+@mixin login-page-background() {
+  @apply h-screen;
+
+  background-image: linear-gradient(colors.$blue-100, colors.$blue-10);
 }
