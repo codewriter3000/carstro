@@ -2,7 +2,9 @@
 @use 'tailwindcss/components';
 @use 'tailwindcss/utilities';
 
-@use '@carbon/react';
+@use '@carbon/react' with (
+  $font-path: '@ibm/plex'
+);
 @use '@carbon/colors';
 
 /// Remove overrides once Carbon bugs are fixed upstream.
