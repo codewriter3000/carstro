@@ -33,34 +33,34 @@ export default function LandingPage() {
     })
 
     return (
-        <Grid className="dashboard-page h-screen" fullWidth>
+        <Grid className="dashboard-page" fullWidth>
             <Column lg={16} md={8} sm={4} className="dashboard-page__banner">
                 <h1>Admin Dashboard</h1>
             </Column>
-            <Column lg={16} md={8} sm={4}>
+            <Column className='mt-6 mb-4' lg={16} md={8} sm={4}>
                 <div className='grid grid-cols-3 gap-4 mt-4'>
                     <div>
-                        <h2>
+                        <h2 className='metric'>
                             <span id='users'/>
                         </h2>
                         <p>Users</p>
                     </div>
                     <div>
-                        <h2>
+                        <h2 className='metric'>
                             <span id='administrators'/>
                         </h2>
                         <p>Administrators</p>
                     </div>
                     <div>
-                        <h2>
+                        <h2 className='metric'>
                             <span id='disabled'/>
                         </h2>
                         <p>Disabled</p>
                     </div>
                 </div>
             </Column>
-            <Column lg={16} md={8} sm={4}>
-                <h2>Administrators</h2>
+            <Column className='mt-6 mb-4' lg={16} md={8} sm={4}>
+                <h2 className='mb-2'>Administrators</h2>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -90,8 +90,8 @@ export default function LandingPage() {
                     </TableBody>
                 </Table>
             </Column>
-            <Column lg={16} md={8} sm={4}>
-                <h2>Disabled</h2>
+            <Column className='mt-6 mb-4' lg={16} md={8} sm={4}>
+                <h2 className='mb-2'>Disabled</h2>
                 <Table>
                     <TableHead>
                         <TableRow>

@@ -1,8 +1,9 @@
 import {
     Button,
     Column,
-    Grid, Modal,
+    Grid,
     Pagination,
+    Search,
     Table,
     TableBody,
     TableCell,
@@ -12,17 +13,13 @@ import {
     Tag
 } from '@carbon/react'
 import users from 'public/users.json'
-import {useRef, useState} from 'react'
-import ConfigureUserModal from "@/components/react/admin/components/ConfigureUserModal.jsx";
+import { useEffect, useState } from 'react'
+import ConfigureUserModal from '@/components/react/admin/components/ConfigureUserModal.jsx'
 
 const mockData = users.users
 
 const getUserFromUsername = (username) => {
-    const data = mockData.find(user => {
-        return user.username === username
-    })
-
-    return data
+    return mockData.find(user => user.username === username)
 }
 
 const UsersPage = () => {
@@ -31,6 +28,9 @@ const UsersPage = () => {
 
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
+
+    const [searchString, setSearchString] = useState('')
+    const [searchResults, setSearchResults] = useState([...mockData])
 
     const changePaginationState = (pageInfo) => {
         if (page !== pageInfo.page) {
@@ -42,12 +42,29 @@ const UsersPage = () => {
         }
     }
 
+    useEffect(() => {
+        setSearchResults(mockData.filter(result => {
+            return result['username'].toLowerCase().includes(searchString.toLowerCase()) ||
+                result['first_name'].toLowerCase().includes(searchString.toLowerCase()) ||
+                result['last_name'].toLowerCase().includes(searchString.toLowerCase())
+        }))
+
+        setPage(1)
+    }, [searchString])
+
     return (
-        <Grid className='h-screen'>
+        <Grid>
             <Column lg={16} md={8} sm={4}>
                 <h1>Users</h1>
             </Column>
             <Column className='mt-4' lg={16} md={8} sm={4}>
+                <Search
+                    size='lg'
+                    placeholder='Find a user'
+                    labelText='Search'
+                    id='user-search'
+                    onChange={evt => setSearchString(evt.target.value)}
+                />
                 <Pagination
                     backwardText='Previous page'
                     forwardText='Next page'
@@ -57,7 +74,7 @@ const UsersPage = () => {
                     pageSize={pageSize}
                     pageSizes={[10, 25, 50]}
                     size='md'
-                    totalItems={mockData.length}
+                    totalItems={searchResults.length}
                 />
                 <Table>
                     <TableHead>
@@ -77,8 +94,8 @@ const UsersPage = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {mockData.filter(user => {
-                            return page * pageSize >= user['id'] && (page - 1) * pageSize < user['id']
+                        {searchResults.filter(user => {
+                            return page * pageSize > searchResults.indexOf(user) && (page - 1) * pageSize <= searchResults.indexOf(user)
                         }).map(user => {
                             return (
                                 <TableRow key={user['id']}>
@@ -103,12 +120,14 @@ const UsersPage = () => {
                                     </TableCell>
                                     <TableCell>
                                         <Button id={user['username']} kind='ghost'
-                                        onClick={(event) => {
-                                            event.preventDefault()
-
-                                            setUser(event.target['id'])
-                                            setOpen(true)
-                                        }}>Configure</Button>
+                                            onClick={(event) => {
+                                                event.preventDefault()
+                                                setUser(event.target['id'])
+                                                setOpen(true)
+                                            }}
+                                        >
+                                            Configure
+                                        </Button>
                                     </TableCell>
                                 </TableRow>
                             )
@@ -116,15 +135,7 @@ const UsersPage = () => {
                     </TableBody>
                 </Table>
             </Column>
-            <Modal open={open}
-                onRequestClose={() => setOpen(false)}
-                modalHeading={`Configure ${user}`}
-                modalLabel='User configuration'
-                secondaryButtonText='Cancel'
-                primaryButtonText='Save Changes'
-            >
-                <ConfigureUserModal user={getUserFromUsername(user)} />
-            </Modal>
+            <ConfigureUserModal open={open} setOpen={setOpen} user={getUserFromUsername(user)} />
         </Grid>
     )
 }

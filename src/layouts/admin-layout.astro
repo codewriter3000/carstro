@@ -14,10 +14,12 @@ import '@/styling/globals.scss';
 </head>
 <body>
 <Theme theme="g100">
-    <AdminHeader client:load />
-    <Content>
-        <slot />
-    </Content>
+    <div class="h-svh">
+        <AdminHeader client:load />
+        <Content>
+            <slot />
+        </Content>
+    </div>
 </Theme>
 </body>
 </html>
