@@ -9,21 +9,33 @@ import {
     TextInput,
     Toggle
 } from '@carbon/react'
-import {useState} from "react";
+import { useEffect, useState } from 'react'
+import {updateUser, deleteUser} from '@/../lib'
 
 const ConfigureUserModal = ({ user, open, setOpen }) => {
 
-    const [isAdmin, setIsAdmin] = useState(user?.['admin'] || false)
-    const [isDisabled, setIsDisabled] = useState(user?.['isDisabled'] || false)
+    const [isAdmin, setIsAdmin] = useState(false)
+    const [isEnabled, setIsEnabled] = useState(false)
     const [deleteStage, setDeleteStage] = useState('Delete Account')
+
+    useEffect(() => {
+        setIsAdmin(user?.['admin'])
+        setIsEnabled(!user?.['isDisabled'])
+        setDeleteStage('Delete Account')
+    }, [user])
 
     return (
         <Modal open={open}
                onRequestClose={() => setOpen(false)}
-               modalHeading={`Configure ${user}`}
+               modalHeading={`Configure ${user?.['username']}`}
                modalLabel='User configuration'
                secondaryButtonText='Cancel'
                primaryButtonText='Save Changes'
+               onRequestSubmit={() => {
+                   updateUser(user?.['id']).then(r => {
+                       console.log('User successfully updated')
+                   })
+               }}
         >
             <Stack gap={7}>
                 <p style={{
@@ -33,11 +45,11 @@ const ConfigureUserModal = ({ user, open, setOpen }) => {
                     particular user. You can change information about a user, change
                     their admin status, or even disable, enable, or delete their account.
                 </p>
-                <TextInput data-modal-primary-focus id="first-name"
+                <TextInput data-modal-primary-focus id="first-name-config"
                            labelText="First name"
                            defaultValue={user?.['first_name']}
                 />
-                <TextInput data-modal-primary-focus id="last-name"
+                <TextInput data-modal-primary-focus id="last-name-config"
                            labelText="Last name"
                            defaultValue={user?.['last_name']}
 
@@ -45,7 +57,7 @@ const ConfigureUserModal = ({ user, open, setOpen }) => {
                 <div className='grid grid-cols-2'>
                     <div>
                         <Toggle labelText='Is admin'
-                                id='isAdmin'
+                                id='isAdmin-config'
                                 labelA='Standard user'
                                 labelB='Admin user'
                                 toggled={isAdmin}
@@ -53,15 +65,12 @@ const ConfigureUserModal = ({ user, open, setOpen }) => {
                         />
                     </div>
                     <div>
-                        <Toggle labelText='Is account disabled'
-                                id='isDisabled'
-                                labelA='Enabled account'
-                                labelB='Disabled account'
-                                toggled={isDisabled}
-                                onClick={(tog) => {
-                                    setIsDisabled(curr => !curr)
-                                    console.log(tog)
-                                }}
+                        <Toggle labelText='Is account enabled'
+                                id='isDisabled-config'
+                                labelB='Enabled account'
+                                labelA='Disabled account'
+                                toggled={isEnabled}
+                                onClick={() => setIsEnabled(!isEnabled)}
                         />
                     </div>
                 </div>
@@ -72,6 +81,9 @@ const ConfigureUserModal = ({ user, open, setOpen }) => {
                                 <Button kind='danger'
                                         onClick={() => {
                                             if (deleteStage === 'Confirm Delete') {
+                                                deleteUser(user?.['id']).then(r => {
+                                                    console.log('User successfully deleted')
+                                                })
                                                 setOpen(false)
                                                 return
                                             }

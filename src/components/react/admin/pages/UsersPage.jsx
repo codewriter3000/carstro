@@ -13,24 +13,36 @@ import {
     Tag
 } from '@carbon/react'
 import users from 'public/users.json'
-import { useEffect, useState } from 'react'
+import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import ConfigureUserModal from '@/components/react/admin/components/ConfigureUserModal.jsx'
+import NewUserModal from '@/components/react/admin/components/NewUserModal.jsx'
+import {listUsers} from '@/../lib'
 
 const mockData = users.users
-
-const getUserFromUsername = (username) => {
-    return mockData.find(user => user.username === username)
-}
+const realData = await listUsers()
 
 const UsersPage = () => {
-    const [open, setOpen] = useState(false)
+    const [configureOpen, setConfigureOpen] = useState(false)
+    const [newOpen, setNewOpen] = useState(false)
     const [user, setUser] = useState('')
 
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
 
     const [searchString, setSearchString] = useState('')
-    const [searchResults, setSearchResults] = useState([...mockData])
+    const [searchResults, setSearchResults] = useState([])
+
+    const getUserFromUsername = useCallback((username) => {
+        const user = realData.find(usr => usr[1] === username)
+
+        return user ? {
+            id: user[0],
+            username: user[1],
+            first_name: user[4],
+            last_name: user[5],
+            is_admin: user[6],
+        } : undefined
+    }, [user])
 
     const changePaginationState = (pageInfo) => {
         if (page !== pageInfo.page) {
@@ -43,11 +55,23 @@ const UsersPage = () => {
     }
 
     useEffect(() => {
-        setSearchResults(mockData.filter(result => {
-            return result['username'].toLowerCase().includes(searchString.toLowerCase()) ||
-                result['first_name'].toLowerCase().includes(searchString.toLowerCase()) ||
-                result['last_name'].toLowerCase().includes(searchString.toLowerCase())
-        }))
+        setSearchResults([...realData])
+
+        if (searchString.length > 0) {
+            setSearchResults(realData.filter(result => {
+                const parsedResult = {
+                    id: result[0],
+                    username: result[1],
+                    first_name: result[4],
+                    last_name: result[5],
+                    is_admin: result[6],
+                }
+
+                return parsedResult['username'].toLowerCase().includes(searchString.toLowerCase()) ||
+                    parsedResult['first_name'].toLowerCase().includes(searchString.toLowerCase()) ||
+                    parsedResult['last_name'].toLowerCase().includes(searchString.toLowerCase())
+            }))
+        }
 
         setPage(1)
     }, [searchString])
@@ -58,6 +82,8 @@ const UsersPage = () => {
                 <h1>Users</h1>
             </Column>
             <Column className='mt-4' lg={16} md={8} sm={4}>
+                <Button onClick={() => setNewOpen(!newOpen)}>New User</Button>
+                <NewUserModal open={newOpen} setOpen={setNewOpen} />
                 <Search
                     size='lg'
                     placeholder='Find a user'
@@ -97,20 +123,28 @@ const UsersPage = () => {
                         {searchResults.filter(user => {
                             return page * pageSize > searchResults.indexOf(user) && (page - 1) * pageSize <= searchResults.indexOf(user)
                         }).map(user => {
+                            const parsedUser = {
+                                id: user[0],
+                                username: user[1],
+                                first_name: user[4],
+                                last_name: user[5],
+                                is_admin: user[6],
+                            }
+
                             return (
-                                <TableRow key={user['id']}>
-                                    <TableCell>{user['last_name']}</TableCell>
-                                    <TableCell>{user['first_name']}</TableCell>
+                                <TableRow key={parsedUser['id']}>
+                                    <TableCell>{parsedUser['last_name']}</TableCell>
+                                    <TableCell>{parsedUser['first_name']}</TableCell>
                                     <TableCell>
-                                        {user['username']}
-                                        {user['is_admin'] &&
+                                        {parsedUser['username']}
+                                        {parsedUser['is_admin'] &&
                                             <>
                                                 {' '}
                                                 <Tag type='blue'>
                                                     Administrator
                                                 </Tag>
                                             </>}
-                                        {user['is_disabled'] &&
+                                        {parsedUser['is_disabled'] &&
                                             <>
                                                 {' '}
                                                 <Tag type='red'>
@@ -119,11 +153,11 @@ const UsersPage = () => {
                                             </>}
                                     </TableCell>
                                     <TableCell>
-                                        <Button id={user['username']} kind='ghost'
+                                        <Button id={parsedUser['username']} kind='ghost'
                                             onClick={(event) => {
                                                 event.preventDefault()
                                                 setUser(event.target['id'])
-                                                setOpen(true)
+                                                setConfigureOpen(true)
                                             }}
                                         >
                                             Configure
@@ -135,7 +169,8 @@ const UsersPage = () => {
                     </TableBody>
                 </Table>
             </Column>
-            <ConfigureUserModal open={open} setOpen={setOpen} user={getUserFromUsername(user)} />
+
+            <ConfigureUserModal open={configureOpen} setOpen={setConfigureOpen} user={getUserFromUsername(user)} />
         </Grid>
     )
 }

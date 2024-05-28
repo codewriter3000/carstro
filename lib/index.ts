@@ -1,4 +1,4 @@
 import api from './api'
-import { getServerStatus } from './status.ts'
+import { registerUser, listUsers, updateUser, deleteUser } from './user.ts'
 
-export { api, getServerStatus }
+export { api, registerUser, listUsers, updateUser, deleteUser }
