@@ -13,7 +13,7 @@ import {
     Tag
 } from '@carbon/react'
 import users from 'public/users.json'
-import {memo, useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import ConfigureUserModal from '@/components/react/admin/components/ConfigureUserModal.jsx'
 import NewUserModal from '@/components/react/admin/components/NewUserModal.jsx'
 import {listUsers} from '@/../lib'
@@ -154,7 +154,7 @@ const UsersPage = () => {
                                                     Administrator
                                                 </Tag>
                                             </>}
-                                        {parsedUser['is_enabled'] &&
+                                        {!parsedUser['is_enabled'] &&
                                             <>
                                                 {' '}
                                                 <Tag type='red'>
