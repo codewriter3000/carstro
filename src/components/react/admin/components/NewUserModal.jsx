@@ -1,15 +1,11 @@
 import {
-    Accordion,
-    AccordionItem,
-    Button,
-    Dropdown, Modal,
-    MultiSelect, PasswordInput,
-    Select,
-    SelectItem, Stack,
+    Modal,
+    PasswordInput,
+    Stack,
     TextInput,
     Toggle
 } from '@carbon/react'
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 import { registerUser } from '@/../lib'
 
 
@@ -33,6 +29,13 @@ const NewUserModal = ({ open, setOpen }) => {
     const [firstNameInvalidText, setFirstNameInvalidText] = useState('')
     const [lastNameInvalidText, setLastNameInvalidText] = useState('')
 
+    useEffect(() => {
+        setUsername('')
+        setPassword('')
+        setFirstName('')
+        setLastName('')
+    }, [open])
+
     return (
         <Modal open={open}
                onRequestClose={() => setOpen(false)}
@@ -49,6 +52,7 @@ const NewUserModal = ({ open, setOpen }) => {
                        first_name: firstName,
                        last_name: lastName,
                        is_admin: isAdmin,
+                       is_enabled: isEnabled
                    }).then(res => {
                        // console.log(res)
                        if (res['detail']) {

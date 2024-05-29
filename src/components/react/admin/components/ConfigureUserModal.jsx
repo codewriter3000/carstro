@@ -2,10 +2,8 @@ import {
     Accordion,
     AccordionItem,
     Button,
-    Dropdown, Modal,
-    MultiSelect,
-    Select,
-    SelectItem, Stack,
+    Modal,
+    Stack,
     TextInput,
     Toggle
 } from '@carbon/react'
@@ -18,10 +16,15 @@ const ConfigureUserModal = ({ user, open, setOpen }) => {
     const [isEnabled, setIsEnabled] = useState(false)
     const [deleteStage, setDeleteStage] = useState('Delete Account')
 
+    const [firstName, setFirstName] = useState('')
+    const [lastName, setLastName] = useState('')
+
     useEffect(() => {
-        setIsAdmin(user?.['admin'])
-        setIsEnabled(!user?.['isDisabled'])
+        setIsAdmin(user?.['is_admin'])
+        setIsEnabled(!user?.['is_enabled'])
         setDeleteStage('Delete Account')
+        setFirstName(user?.['first_name'])
+        setLastName(user?.['last_name'])
     }, [user])
 
     return (
@@ -32,9 +35,21 @@ const ConfigureUserModal = ({ user, open, setOpen }) => {
                secondaryButtonText='Cancel'
                primaryButtonText='Save Changes'
                onRequestSubmit={() => {
-                   updateUser(user?.['id']).then(r => {
+                   const updatedUserPayload = {
+                       username: user['username'],
+                       first_name: firstName,
+                       last_name: lastName,
+                       is_admin: isAdmin,
+                       is_enabled: isEnabled
+                   }
+
+                   console.log(JSON.stringify(updatedUserPayload))
+
+                   updateUser(user['id'], updatedUserPayload).then(() => {
                        console.log('User successfully updated')
                    })
+
+                   setOpen(false)
                }}
         >
             <Stack gap={7}>
@@ -48,11 +63,14 @@ const ConfigureUserModal = ({ user, open, setOpen }) => {
                 <TextInput data-modal-primary-focus id="first-name-config"
                            labelText="First name"
                            defaultValue={user?.['first_name']}
+                           value={firstName}
+                           onChange={evt => setFirstName(evt.target.value)}
                 />
                 <TextInput data-modal-primary-focus id="last-name-config"
                            labelText="Last name"
                            defaultValue={user?.['last_name']}
-
+                           value={lastName}
+                           onChange={evt => setLastName(evt.target.value)}
                 />
                 <div className='grid grid-cols-2'>
                     <div>

@@ -13,13 +13,13 @@ import {
     Tag
 } from '@carbon/react'
 import users from 'public/users.json'
-import {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {memo, useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react'
 import ConfigureUserModal from '@/components/react/admin/components/ConfigureUserModal.jsx'
 import NewUserModal from '@/components/react/admin/components/NewUserModal.jsx'
 import {listUsers} from '@/../lib'
 
 const mockData = users.users
-const realData = await listUsers()
+// const realData = await listUsers()
 
 const UsersPage = () => {
     const [configureOpen, setConfigureOpen] = useState(false)
@@ -32,6 +32,14 @@ const UsersPage = () => {
     const [searchString, setSearchString] = useState('')
     const [searchResults, setSearchResults] = useState([])
 
+    const [realData, setRealData] = useState([])
+
+    useEffect(() => {
+        listUsers().then(users => {
+            setRealData(users)
+        })
+    }, [newOpen, configureOpen])
+
     const getUserFromUsername = useCallback((username) => {
         const user = realData.find(usr => usr[1] === username)
 
@@ -41,6 +49,7 @@ const UsersPage = () => {
             first_name: user[4],
             last_name: user[5],
             is_admin: user[6],
+            is_enabled: user[7],
         } : undefined
     }, [user])
 
@@ -74,7 +83,7 @@ const UsersPage = () => {
         }
 
         setPage(1)
-    }, [searchString])
+    }, [searchString, realData])
 
     return (
         <Grid>
@@ -129,6 +138,7 @@ const UsersPage = () => {
                                 first_name: user[4],
                                 last_name: user[5],
                                 is_admin: user[6],
+                                is_enabled: user[7],
                             }
 
                             return (
@@ -144,7 +154,7 @@ const UsersPage = () => {
                                                     Administrator
                                                 </Tag>
                                             </>}
-                                        {parsedUser['is_disabled'] &&
+                                        {parsedUser['is_enabled'] &&
                                             <>
                                                 {' '}
                                                 <Tag type='red'>
