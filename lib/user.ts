@@ -64,4 +64,61 @@ const deleteUser = async (user_id: number): Promise<object[]> => {
     }
 }
 
-export {registerUser, listUsers, updateUser, deleteUser}
+const loginUser = async ({username, password}: {username: string, password: string}): Promise<object> => {
+    try {
+
+        const res: AxiosResponse = await api.post('/user/login', {
+            username: username,
+            password: password
+        }, {
+            withCredentials: true
+        })
+
+        console.log(res.data)
+
+        return res.data
+    } catch (error) {
+        console.log(error)
+
+        // @ts-ignore
+        return error.response
+    }
+}
+
+// @ts-ignore
+const logoutUser = async (): Promise<object> => {
+    try {
+        const res: AxiosResponse = await api.post('/user/logout', {}, {
+            withCredentials: true
+        })
+
+        return res.data
+    } catch (error) {
+        // @ts-ignore
+        return error.response.data
+    }
+}
+
+const isAdmin = async (token: string): Promise<object> => {
+    try {
+        const res: AxiosResponse = await api.get('/admin/auth', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+
+        console.log(res.data)
+
+        if (res.data['is_valid'] === true) {
+            return {'is_admin': true}
+        } else {
+            return {'is_admin': false, 'message': res.data['message']}
+        }
+    } catch(error) {
+        console.log(error)
+    }
+
+    return {'is_admin': false, 'message': 'An unknown TS error has occurred'}
+}
+
+export { registerUser, listUsers, updateUser, deleteUser, loginUser, logoutUser, isAdmin }

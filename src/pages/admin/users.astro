@@ -3,6 +3,21 @@ import Layout from '@/layouts/admin-layout.astro'
 import UsersPage from '@/components/react/admin/pages/UsersPage'
 
 import '@/styling/pages/_index.scss'
+
+import { isAdmin } from '@/../lib/user'
+
+// console.log(`cookies: ${JSON.stringify(Astro.cookies.get('token'))}`)
+
+// if (!Astro.cookies.get('jwt') || !isAdmin(Astro.cookies.get('jwt'))) {
+//     console.log('unauthenticated')
+//     // return Astro.redirect('/admin/login')
+//     return new Response(null, {
+//         status: 403,
+//         statusText: 'Unauthorized'
+//     })
+// } else {
+//     console.log('authenticated')
+// }
 ---
 <Layout>
     <UsersPage client:load />

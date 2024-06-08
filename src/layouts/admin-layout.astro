@@ -1,7 +1,9 @@
 ---
 import { Content, Theme } from '@carbon/react'
 import AdminHeader from '@/components/react/admin/AdminHeader'
-import '@/styling/globals.scss';
+import '@/styling/globals.scss'
+
+
 ---
 <html lang="en">
 <head>
@@ -17,7 +19,7 @@ import '@/styling/globals.scss';
     <div class="h-svh">
         <AdminHeader client:load />
         <Content>
-            <slot />
+            <slot client:load />
         </Content>
     </div>
 </Theme>

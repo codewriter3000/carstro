@@ -12,14 +12,10 @@ import {
     TableRow,
     Tag
 } from '@carbon/react'
-import users from 'public/users.json'
-import {useCallback, useEffect, useState} from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import ConfigureUserModal from '@/components/react/admin/components/ConfigureUserModal.jsx'
 import NewUserModal from '@/components/react/admin/components/NewUserModal.jsx'
-import {listUsers} from '@/../lib'
-
-const mockData = users.users
-// const realData = await listUsers()
+import { listUsers } from '@/../lib'
 
 const UsersPage = () => {
     const [configureOpen, setConfigureOpen] = useState(false)
@@ -86,102 +82,104 @@ const UsersPage = () => {
     }, [searchString, realData])
 
     return (
-        <Grid>
-            <Column lg={16} md={8} sm={4}>
-                <h1>Users</h1>
-            </Column>
-            <Column className='mt-4' lg={16} md={8} sm={4}>
-                <Button onClick={() => setNewOpen(!newOpen)}>New User</Button>
-                <NewUserModal open={newOpen} setOpen={setNewOpen} />
-                <Search
-                    size='lg'
-                    placeholder='Find a user'
-                    labelText='Search'
-                    id='user-search'
-                    onChange={evt => setSearchString(evt.target.value)}
-                />
-                <Pagination
-                    backwardText='Previous page'
-                    forwardText='Next page'
-                    itemsPerPageText='Items per page'
-                    onChange={changePaginationState}
-                    page={page}
-                    pageSize={pageSize}
-                    pageSizes={[10, 25, 50]}
-                    size='md'
-                    totalItems={searchResults.length}
-                />
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableHeader>
-                                Last Name
-                            </TableHeader>
-                            <TableHeader>
-                                First Name
-                            </TableHeader>
-                            <TableHeader>
-                                Username
-                            </TableHeader>
-                            <TableHeader>
-                                Actions
-                            </TableHeader>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {searchResults.filter(user => {
-                            return page * pageSize > searchResults.indexOf(user) && (page - 1) * pageSize <= searchResults.indexOf(user)
-                        }).map(user => {
-                            const parsedUser = {
-                                id: user[0],
-                                username: user[1],
-                                first_name: user[4],
-                                last_name: user[5],
-                                is_admin: user[6],
-                                is_enabled: user[7],
-                            }
-
-                            return (
-                                <TableRow key={parsedUser['id']}>
-                                    <TableCell>{parsedUser['last_name']}</TableCell>
-                                    <TableCell>{parsedUser['first_name']}</TableCell>
-                                    <TableCell>
-                                        {parsedUser['username']}
-                                        {parsedUser['is_admin'] &&
-                                            <>
-                                                {' '}
-                                                <Tag type='blue'>
-                                                    Administrator
-                                                </Tag>
-                                            </>}
-                                        {!parsedUser['is_enabled'] &&
-                                            <>
-                                                {' '}
-                                                <Tag type='red'>
-                                                    Disabled
-                                                </Tag>
-                                            </>}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Button id={parsedUser['username']} kind='ghost'
-                                            onClick={(event) => {
-                                                event.preventDefault()
-                                                setUser(event.target['id'])
-                                                setConfigureOpen(true)
-                                            }}
-                                        >
-                                            Configure
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            )
-                        })}
-                    </TableBody>
-                </Table>
-            </Column>
-
+        <>
+            <NewUserModal open={newOpen} setOpen={setNewOpen} />
             <ConfigureUserModal open={configureOpen} setOpen={setConfigureOpen} user={getUserFromUsername(user)} />
-        </Grid>
+            <Grid>
+                <Column lg={16} md={8} sm={4}>
+                    <h1>Users</h1>
+                </Column>
+                <Column className='mt-4' lg={16} md={8} sm={4}>
+                    <Button onClick={() => setNewOpen(!newOpen)}>New User</Button>
+                    <Search
+                        size='lg'
+                        placeholder='Find a user'
+                        labelText='Search'
+                        id='user-search'
+                        onChange={evt => setSearchString(evt.target.value)}
+                    />
+                    <Pagination
+                        backwardText='Previous page'
+                        forwardText='Next page'
+                        itemsPerPageText='Items per page'
+                        onChange={changePaginationState}
+                        page={page}
+                        pageSize={pageSize}
+                        pageSizes={[10, 25, 50]}
+                        size='md'
+                        totalItems={searchResults.length}
+                    />
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableHeader>
+                                    Last Name
+                                </TableHeader>
+                                <TableHeader>
+                                    First Name
+                                </TableHeader>
+                                <TableHeader>
+                                    Username
+                                </TableHeader>
+                                <TableHeader>
+                                    Actions
+                                </TableHeader>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {searchResults.filter(user => {
+                                return page * pageSize > searchResults.indexOf(user) &&
+                                    (page - 1) * pageSize <= searchResults.indexOf(user)
+                            }).map(user => {
+                                const parsedUser = {
+                                    id: user[0],
+                                    username: user[1],
+                                    first_name: user[4],
+                                    last_name: user[5],
+                                    is_admin: user[6],
+                                    is_enabled: user[7],
+                                }
+
+                                return (
+                                    <TableRow key={parsedUser['id']}>
+                                        <TableCell>{parsedUser['last_name']}</TableCell>
+                                        <TableCell>{parsedUser['first_name']}</TableCell>
+                                        <TableCell>
+                                            {parsedUser['username']}
+                                            {parsedUser['is_admin'] &&
+                                                <>
+                                                    {' '}
+                                                    <Tag type='blue'>
+                                                        Administrator
+                                                    </Tag>
+                                                </>}
+                                            {!parsedUser['is_enabled'] &&
+                                                <>
+                                                    {' '}
+                                                    <Tag type='red'>
+                                                        Disabled
+                                                    </Tag>
+                                                </>}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Button id={parsedUser['username']} kind='ghost'
+                                                    onClick={(event) => {
+                                                        event.preventDefault()
+                                                        setUser(event.target['id'])
+                                                        setConfigureOpen(true)
+                                                    }}
+                                            >
+                                                Configure
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                            })}
+                        </TableBody>
+                    </Table>
+                </Column>
+            </Grid>
+        </>
     )
 }
 

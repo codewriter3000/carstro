@@ -14,3 +14,7 @@
 .login-frame {
   @apply flex flex-row min-h-screen justify-center items-center;
 }
+
+.error {
+  color: $text-error;
+}

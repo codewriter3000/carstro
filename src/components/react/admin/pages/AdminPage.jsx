@@ -12,24 +12,39 @@ import {
     Tabs, Tag
 } from '@carbon/react'
 import CountUp, { useCountUp } from 'react-countup'
-import users from 'public/users.json'
-
-const mockData = users.users
+import { useEffect, useState } from 'react'
+import { listUsers } from '@/../lib'
 
 export default function LandingPage() {
+    const [realData, setRealData] = useState([])
+    const [admins, setAdmins] = useState([])
+    const [disabledUsers, setDisabledUsers] = useState([])
+    const [isLoaded, _] = useState(true)
+
+    useEffect(() => {
+        listUsers().then(users => {
+            setRealData(users)
+        })
+    }, [isLoaded])
+
+    useEffect(() => {
+        setAdmins(realData.filter(user => user['is_admin']))
+        setDisabledUsers(realData.filter(user => !user['is_enabled']))
+    }, [realData])
+
     useCountUp({
         ref: 'users',
-        end: 347
+        end: realData.length
     })
 
     useCountUp({
         ref: 'administrators',
-        end: 5
+        end: admins.length
     })
 
     useCountUp({
         ref: 'disabled',
-        end: 2
+        end: disabledUsers.length
     })
 
     return (
@@ -76,7 +91,7 @@ export default function LandingPage() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {mockData.filter(user => user['is_admin']).map(user => {
+                        {admins.map(user => {
                             return (
                                 <TableRow key={user['id']}>
                                     <TableCell>{user['last_name']}</TableCell>
@@ -107,7 +122,7 @@ export default function LandingPage() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {mockData.filter(user => user['is_disabled']).map(user => {
+                        {disabledUsers.filter(user => user['is_disabled']).map(user => {
                             return (
                                 <TableRow key={user['id']}>
                                     <TableCell>{user['last_name']}</TableCell>

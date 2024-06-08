@@ -10,12 +10,14 @@ import {
     SkipToContent,
     SideNav,
     SideNavItems,
-    HeaderSideNavItems, Popover, PopoverContent, Button,
+    HeaderSideNavItems, Popover, PopoverContent, Button, SideNavLink,
 } from '@carbon/react'
 import {Switcher, Notification, UserAvatar} from '@carbon/icons-react'
 
 import '@/styling/components/react/_application-header.scss'
-import {useState} from "react";
+import { useState } from 'react'
+import { logoutUser } from '@/../lib/user.ts'
+import {redirect} from "../../../../lib";
 
 const AdminHeader = () => {
     const [userPopoverOpen, setUserPopoverOpen] = useState(false)
@@ -30,13 +32,13 @@ const AdminHeader = () => {
                         onClick={onClickSideNavExpand}
                         isActive={isSideNavExpanded}
                     />
-                    <a href="/admin/dashboard">
-                        <HeaderName prefix="Carstro">Admin Panel</HeaderName>
-                    </a>
+                    <HeaderName href="/admin/dashboard" prefix="Carstro">
+                        Admin Panel
+                    </HeaderName>
                     <HeaderNavigation aria-label="Users">
-                        <a href="/admin/users">
-                            <HeaderMenuItem>Users</HeaderMenuItem>
-                        </a>
+                            <HeaderMenuItem href="/admin/users">
+                                Users
+                            </HeaderMenuItem>
                     </HeaderNavigation>
                     <SideNav
                         aria-label="Side navigation"
@@ -44,11 +46,9 @@ const AdminHeader = () => {
                         isPersistent={false}
                     >
                         <SideNavItems>
-                            <HeaderSideNavItems>
-                                <a href="/admin/users">
-                                    <HeaderMenuItem>Users</HeaderMenuItem>
-                                </a>
-                            </HeaderSideNavItems>
+                            <SideNavLink href="/admin/users">
+                                Users
+                            </SideNavLink>
                         </SideNavItems>
                     </SideNav>
                     <HeaderGlobalBar className='mr-8'>
@@ -64,7 +64,10 @@ const AdminHeader = () => {
                                 <UserAvatar size={20}/>
                             </HeaderGlobalAction>
                             <PopoverContent>
-                                <Button kind='ghost'>Logout</Button>
+                                <Button kind='ghost' onClick={async() => {
+                                    await logoutUser()
+                                    redirect('/admin/login')
+                                }}>Logout</Button>
                             </PopoverContent>
                         </Popover>
                     </HeaderGlobalBar>
