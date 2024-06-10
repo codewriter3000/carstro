@@ -1,5 +1,5 @@
 import api from './api'
-import type {AxiosResponse} from 'axios'
+import type {AxiosError, AxiosResponse} from 'axios'
 
 const registerUser = async ({username, password, first_name, last_name, is_admin, is_enabled}:
                                 {
@@ -74,14 +74,11 @@ const loginUser = async ({username, password}: {username: string, password: stri
             withCredentials: true
         })
 
-        console.log(res.data)
-
-        return res.data
+        return res.data['token']
     } catch (error) {
-        console.log(error)
 
         // @ts-ignore
-        return error.response
+        return {'error': 401, 'message': error.response.data.detail}
     }
 }
 
@@ -107,18 +104,14 @@ const isAdmin = async (token: string): Promise<object> => {
             }
         })
 
-        console.log(res.data)
-
-        if (res.data['is_valid'] === true) {
+        if (res.data['is_admin'] === true) {
             return {'is_admin': true}
         } else {
             return {'is_admin': false, 'message': res.data['message']}
         }
-    } catch(error) {
-        console.log(error)
+    } catch(error: any) {
+        return {'is_admin': false, 'message': error.response.data.detail}
     }
-
-    return {'is_admin': false, 'message': 'An unknown TS error has occurred'}
 }
 
 export { registerUser, listUsers, updateUser, deleteUser, loginUser, logoutUser, isAdmin }

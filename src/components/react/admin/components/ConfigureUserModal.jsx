@@ -43,8 +43,6 @@ const ConfigureUserModal = ({ user, open, setOpen }) => {
                        is_enabled: isEnabled
                    }
 
-                   console.log(JSON.stringify(updatedUserPayload))
-
                    updateUser(user['id'], updatedUserPayload).then(() => {
                        console.log('User successfully updated')
                    })

@@ -12,23 +12,13 @@ const isAdminUrl = (url: string) => {
 
 
 export const onRequest = async (context: any, next: MiddlewareNext) => {
-    if (isAdminUrl(context['url'].toString())) {
-        console.log('is admin url')
-    } else {
-        console.log('is not admin url')
+    if (!isAdminUrl(context['url'].toString())) {
         return next()
     }
 
-    // if (!await context.cookies.get('token')) {
-    //     return new Response(null, {
-    //         status: 403,
-    //         statusText: 'Unauthorized'
-    //     })
-    // }
+    const isAdminJSON: any = await isAdmin(context.cookies.get('token').value)
 
-    console.log(context.cookies.get('token').value)
-
-    if (await isAdmin(context.cookies.get('token').value)) {
+    if (isAdminJSON['is_admin']) {
         return next()
     } else {
         return new Response(null, {

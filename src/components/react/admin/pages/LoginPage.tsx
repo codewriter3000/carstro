@@ -27,19 +27,20 @@ const LoginPage = () => {
                                         <PasswordInput ref={password} labelText='Password' id='password'/>
                                         <Button className='w-96' renderIcon={ArrowRight} onClick={async() => {
                                             // @ts-ignore
-                                            const token = (await loginUser({
+                                            const loginRequest: any = (await loginUser({
                                                 username: username.current['value'],
-                                                password: password.current['value']}))['token']
+                                                password: password.current['value']}))
                                             // @ts-ignore
-                                            if (token) {
-                                                const userIsAdmin = await isAdmin(token)
+                                            if (loginRequest['token'] && !loginRequest['error']) {
+                                                const userIsAdmin = await isAdmin(loginRequest['token'])
                                                 if (userIsAdmin['is_admin']) {
                                                     console.log('Login successful')
                                                     redirect('/admin/dashboard')
                                                 } else {
-                                                    console.log(JSON.stringify(userIsAdmin))
                                                     setErrorMessage(userIsAdmin['message'])
                                                 }
+                                            } else {
+                                                setErrorMessage(loginRequest['message'])
                                             }
                                         }}>Log in</Button>
                                     </Stack>
