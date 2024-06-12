@@ -30,9 +30,14 @@ const UsersPage = () => {
 
     const [realData, setRealData] = useState([])
 
+    const [shouldThrowError, setShouldThrowError] = useState(false)
+
     useEffect(() => {
         listUsers().then(users => {
             setRealData(users)
+        }).catch(err => {
+            console.log(err)
+            setShouldThrowError(true)
         })
     }, [newOpen, configureOpen])
 
@@ -81,8 +86,17 @@ const UsersPage = () => {
         setPage(1)
     }, [searchString, realData])
 
+    const ErrorBoundary = ({ trigger, fallback, children }) => {
+        if (trigger) {
+            console.log('fallback')
+            return fallback
+        } else {
+            return children
+        }
+    }
+
     return (
-        <>
+        <ErrorBoundary trigger={shouldThrowError} fallback={<h1>An error has occurred</h1>}>
             <NewUserModal open={newOpen} setOpen={setNewOpen} />
             <ConfigureUserModal open={configureOpen} setOpen={setConfigureOpen} user={getUserFromUsername(user)} />
             <Grid>
@@ -179,7 +193,7 @@ const UsersPage = () => {
                     </Table>
                 </Column>
             </Grid>
-        </>
+        </ErrorBoundary>
     )
 }
 

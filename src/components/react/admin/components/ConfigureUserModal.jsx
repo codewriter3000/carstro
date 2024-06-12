@@ -58,12 +58,12 @@ const ConfigureUserModal = ({ user, open, setOpen }) => {
                     particular user. You can change information about a user, change
                     their admin status, or even disable, enable, or delete their account.
                 </p>
-                {/*<TextInput data-modal-primary-focus id="first-name-config"*/}
-                {/*           labelText="First name"*/}
-                {/*           defaultValue={user?.['first_name']}*/}
-                {/*           value={firstName}*/}
-                {/*           onChange={evt => setFirstName(evt.target.value)}*/}
-                {/*/>*/}
+                <TextInput data-modal-primary-focus id="first-name-config"
+                           labelText="First name"
+                           defaultValue={user?.['first_name']}
+                           value={firstName}
+                           onChange={evt => setFirstName(evt.target.value)}
+                />
                 <TextInput data-modal-primary-focus id="last-name-config"
                            labelText="Last name"
                            defaultValue={user?.['last_name']}

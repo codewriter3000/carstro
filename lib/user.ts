@@ -1,5 +1,5 @@
 import api from './api'
-import type {AxiosError, AxiosResponse} from 'axios'
+import type { AxiosResponse } from 'axios'
 
 const registerUser = async ({username, password, first_name, last_name, is_admin, is_enabled}:
                                 {
@@ -11,8 +11,13 @@ const registerUser = async ({username, password, first_name, last_name, is_admin
                                     is_enabled: string
                                 }): Promise<object> => {
     try {
+        const token = localStorage.getItem('token')
         const res: AxiosResponse<any, any> = await api.post('/user/create', {
             username, password, first_name, last_name, is_admin, is_enabled
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         })
 
         return res.data
@@ -24,12 +29,18 @@ const registerUser = async ({username, password, first_name, last_name, is_admin
 
 const listUsers = async (): Promise<object[]> => {
     try {
-        const res: AxiosResponse = await api.get('/users/list')
+        const token = localStorage.getItem('token')
+        const res: AxiosResponse = await api.get('/users/list', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
 
         return res.data
     } catch (error) {
         // @ts-ignore
-        return error.response.data
+        console.log(error)
+        return error
     }
 }
 
@@ -42,9 +53,14 @@ const updateUser = async (user_id: number, {username, first_name, last_name, is_
                                 is_enabled: boolean
                             }): Promise<object[]> => {
     try {
+        const token = localStorage.getItem('token')
         const res: AxiosResponse = await api.put(`/users/${user_id}`, {
         username, first_name, last_name, is_admin, is_enabled
-    })
+    }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
 
         return res.data
     } catch (error) {
@@ -55,7 +71,12 @@ const updateUser = async (user_id: number, {username, first_name, last_name, is_
 
 const deleteUser = async (user_id: number): Promise<object[]> => {
     try {
-        const res: AxiosResponse = await api.delete(`/users/${user_id}`)
+        const token = localStorage.getItem('token')
+        const res: AxiosResponse = await api.delete(`/users/${user_id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
 
         return res.data
     } catch (error) {
@@ -66,13 +87,17 @@ const deleteUser = async (user_id: number): Promise<object[]> => {
 
 const loginUser = async ({username, password}: {username: string, password: string}): Promise<object> => {
     try {
-
         const res: AxiosResponse = await api.post('/user/login', {
             username: username,
             password: password
         }, {
             withCredentials: true
         })
+
+        if (localStorage) {
+            console.log(JSON.stringify(res.data['token']))
+            localStorage.setItem('token', res.data['token']['token'])
+        }
 
         return res.data['token']
     } catch (error) {
