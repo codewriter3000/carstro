@@ -1,21 +1,20 @@
 import {
-    Breadcrumb,
-    BreadcrumbItem,
-    Button,
     Column,
-    // ErrorBoundary,
-    ErrorBoundaryContext,
     Grid,
-    Layer,
-    Tab, Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-    TabList,
-    TabPanel,
-    TabPanels,
-    Tabs, Tag
+    Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@carbon/react'
-import CountUp, { useCountUp } from 'react-countup'
+import { useCountUp } from 'react-countup'
 import {useEffect, useRef, useState} from 'react'
 import { listUsers } from '@/../lib'
+
+const ErrorBoundary = ({ trigger, fallback, children }) => {
+    if (trigger) {
+        console.log('fallback')
+        return fallback
+    } else {
+        return children
+    }
+}
 
 export default function LandingPage() {
     const [realData, setRealData] = useState([])
@@ -26,17 +25,19 @@ export default function LandingPage() {
 
     useEffect(() => {
         listUsers().then(users => {
-            setRealData(users)
+            setRealData(users as never[])
+            userCountUp.update(users.length)
         }).catch(err => {
             console.log(JSON.stringify(err))
             setShouldThrowError(true)
         })
-        userCountUp.update(realData.length)
     }, [isLoaded])
 
     useEffect(() => {
-        setAdmins(realData.filter(user => user[6]))
-        setDisabledUsers(realData.filter(user => !user[7]))
+        const admins = realData.filter(user => user[6])
+        const disabledUsers = realData.filter(user => !user[7])
+        setAdmins(admins)
+        setDisabledUsers(disabledUsers)
         adminCountUp.update(admins.length)
         disabledCountUp.update(disabledUsers.length)
     }, [realData])
@@ -63,15 +64,6 @@ export default function LandingPage() {
     const ThrowError = (shouldThrowError) => {
         if (shouldThrowError) {
             //throw new Error('Trying to get around this error by rendering a fallback using an IBM carbon component')
-        }
-    }
-
-    const ErrorBoundary = ({ trigger, fallback, children }) => {
-        if (trigger) {
-            console.log('fallback')
-            return fallback
-        } else {
-            return children
         }
     }
 
